@@ -107,11 +107,9 @@ function initPinGate() {
   const dotsWrap= document.getElementById('pin-dots');
   const errEl   = document.getElementById('pin-error');
   const pad     = document.getElementById('pin-pad');
+  const curtain = document.getElementById('curtain');
 
   let entered = '';
-
-  // Show the gate
-  gate.classList.add('visible');
 
   function updateDots() {
     dots.forEach((d, i) => {
@@ -140,14 +138,17 @@ function initPinGate() {
     if (entered === CORRECT_PIN) {
       // Turn dots green
       dots.forEach(d => d.classList.add('success'));
-      // Fade out gate after brief celebration
+      // Unlock gate + open curtain + restore body scrolling
       setTimeout(() => {
         gate.classList.add('unlock');
+        if (curtain) curtain.classList.add('open');
+        document.body.classList.remove('pin-locked');
+
         setTimeout(() => {
           gate.style.display = 'none';
-          gate.classList.remove('visible', 'unlock');
-        }, 580);
-      }, 480);
+          if (curtain) curtain.style.display = 'none';
+        }, 700);
+      }, 400);
     } else {
       // Shake + error
       dotsWrap.classList.remove('shake');
@@ -185,7 +186,7 @@ function initPinGate() {
 
   // Physical keyboard support
   document.addEventListener('keydown', function handler(e) {
-    if (!gate.classList.contains('visible')) {
+    if (gate.style.display === 'none') {
       document.removeEventListener('keydown', handler);
       return;
     }
@@ -201,7 +202,6 @@ function initPreloader() {
   const pct         = document.getElementById('preloader-pct');
   const cakeFillRect= document.getElementById('cake-fill-rect');
   const flames      = document.querySelectorAll('.flame');
-  const curtain     = document.getElementById('curtain');
 
   // Track images primarily for fast & reliable preloader reveal
   const imgs = Array.from(document.querySelectorAll('img[data-preload]'));
@@ -236,17 +236,13 @@ function initPreloader() {
 
     setTimeout(() => {
       preloader.classList.add('hide');
-      curtain.classList.add('open');
       setTimeout(() => {
         preloader.style.display = 'none';
-        curtain.style.display   = 'none';
-        // ── Show PIN gate after preloader fully hides ──
-        initPinGate();
-      }, 900);
+      }, 600);
     }, 400);
   }
 
-  // Safety fallback timeout — guarantee site reveals within 1.5s even on slow network
+  // Safety fallback timeout — guarantee preloader resolves within 1.5s
   const safetyTimer = setTimeout(() => {
     revealSite();
   }, 1500);
@@ -295,6 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
   buildClosingLetter();
   buildFooter();
 
+  initPinGate();
   initPreloader();
 
   initAmbientCanvas();

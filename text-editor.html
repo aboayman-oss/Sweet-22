@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sweet 22 — محرر النصوص</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --rose:   #c8958c;
+      --rose-lt:#e8b4ad;
+      --rose-dk:#a0706a;
+      --blush:  #f5e0dd;
+      --cream:  #fdf6f0;
+      --gold:   #d4a96a;
+      --text:   #3d2c2a;
+      --mid:    #6b4c48;
+      --light:  #9a7470;
+      --white:  #ffffff;
+      --green:  #27ae60;
+    }
+
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 2rem 1rem 6rem;
+    }
+
+    /* ── Header ── */
+    .page-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    .page-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--rose-dk);
+    }
+    .page-header p {
+      color: var(--mid);
+      font-size: 1rem;
+      margin-top: 0.4rem;
+    }
+    .badge {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--rose-lt), var(--rose));
+      color: var(--white);
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 0.25rem 0.9rem;
+      border-radius: 99px;
+      margin-top: 0.7rem;
+    }
+
+    /* ── Section blocks ── */
+    .section-block {
+      background: var(--white);
+      border-radius: 1rem;
+      border: 1px solid var(--blush);
+      box-shadow: 0 4px 18px rgba(160,112,106,0.1);
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+    .section-block header {
+      background: linear-gradient(135deg, var(--blush), #fdf6f0);
+      border-bottom: 1px solid var(--blush);
+      padding: 0.85rem 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .section-block header .icon {
+      font-size: 1.2rem;
+    }
+    .section-block header h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--rose-dk);
+    }
+    .section-block header small {
+      color: var(--light);
+      font-size: 0.82rem;
+      margin-right: auto;
+    }
+
+    /* ── Row ── */
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border-bottom: 1px solid #f0e4e1;
+    }
+    .row:last-child { border-bottom: none; }
+
+    .col {
+      padding: 1rem 1.2rem;
+    }
+    .col + .col {
+      border-right: 1px solid #f0e4e1;
+    }
+    .col label {
+      display: block;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--light);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.4rem;
+    }
+    .current-text {
+      font-size: 0.93rem;
+      color: var(--mid);
+      background: #faf6f5;
+      border: 1px dashed var(--rose-lt);
+      border-radius: 0.5rem;
+      padding: 0.55rem 0.8rem;
+      min-height: 2.4rem;
+      white-space: pre-wrap;
+      line-height: 1.65;
+    }
+    textarea, input[type="text"] {
+      width: 100%;
+      font-family: 'Cairo', sans-serif;
+      font-size: 0.93rem;
+      color: var(--text);
+      border: 1.5px solid var(--rose-lt);
+      border-radius: 0.5rem;
+      padding: 0.55rem 0.8rem;
+      background: var(--white);
+      resize: vertical;
+      min-height: 2.4rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      line-height: 1.65;
+      direction: rtl;
+    }
+    textarea:focus, input[type="text"]:focus {
+      outline: none;
+      border-color: var(--rose);
+      box-shadow: 0 0 0 3px rgba(200,149,140,0.18);
+    }
+    textarea.changed, input[type="text"].changed {
+      border-color: var(--green);
+      background: #f0faf4;
+    }
+
+    .row-key {
+      font-size: 0.72rem;
+      font-family: monospace;
+      background: rgba(200,149,140,0.1);
+      color: var(--rose-dk);
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      margin-bottom: 0.35rem;
+      display: inline-block;
+    }
+
+    /* ── Footer toolbar ── */
+    .toolbar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--blush);
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      z-index: 100;
+      box-shadow: 0 -4px 24px rgba(160,112,106,0.1);
+    }
+    .toolbar-info {
+      font-size: 0.88rem;
+      color: var(--mid);
+    }
+    .toolbar-info strong {
+      color: var(--rose-dk);
+    }
+    .btn-export {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, var(--rose-lt), var(--rose-dk));
+      color: var(--white);
+      font-family: 'Cairo', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 0.75rem 2rem;
+      border-radius: 99px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(160,112,106,0.3);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-export:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(160,112,106,0.4);
+    }
+    .btn-export:active { transform: scale(0.96); }
+
+    /* ── Notice ── */
+    .notice {
+      background: linear-gradient(135deg, #fff8e1, #fff3cd);
+      border: 1px solid #f0c040;
+      border-radius: 0.75rem;
+      padding: 0.9rem 1.2rem;
+      font-size: 0.92rem;
+      color: #7a5c00;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .row { grid-template-columns: 1fr; }
+      .col + .col { border-right: none; border-top: 1px solid #f0e4e1; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-header">
+    <h1>✏️ محرر نصوص Sweet 22</h1>
+    <p>عدّل النصوص في الخانات اليمنى، ثم اضغط "تصدير التغييرات"</p>
+    <span class="badge">كل الحقول المتغيّرة ستُصدَّر فقط في الملف</span>
+  </div>
+
+  <div class="notice">
+    💡 اكتب النص الجديد في الجانب الأيسر بجانب كل عنصر — الخانات الفارغة لن تُصدَّر. بعد الانتهاء اضغط الزر في الأسفل لتحميل ملف التغييرات.
+  </div>
+
+  <!-- ════════════════════════════════
+       1. HERO SECTION
+  ════════════════════════════════ -->
+  <div class="section-block">
+    <header>
+      <span class="icon">🌟</span>
+      <h2>الصفحة الرئيسية (Hero)</h2>
+      <small>3 عناصر</small>
+    </header>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">hero.name</div>
+        <label>النص الحالي</label>
+        <div class="current-text">حبيبة</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <input type="text" data-key="hero.name" placeholder="اتركيه فارغًا إن لم يتغيّر">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">hero.age</div>
+        <label>النص الحالي</label>
+        <div class="current-text">22</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <input type="text" data-key="hero.age" placeholder="اتركيه فارغًا إن لم يتغيّر">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">hero.tagline</div>
+        <label>النص الحالي</label>
+        <div class="current-text">كل سنة وانتي طيبة يا اجمل حاجة حصلتلي</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <input type="text" data-key="hero.tagline" placeholder="اتركيه فارغًا إن لم يتغيّر">
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       2. PRELOADER / PIN
+  ════════════════════════════════ -->
+  <div class="section-block">
+    <header>
+      <span class="icon">🔐</span>
+      <h2>شاشة التحميل والكود السري</h2>
+      <small>4 عناصر</small>
+    </header>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">preloader.text</div>
+        <label>النص الحالي</label>
+        <div class="current-text">جاري التحضير...</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <input type="text" data-key="preloader.text" placeholder="اتركيه فارغًا إن لم يتغيّر">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">pin.title</div>
+        <label>النص الحالي</label>
+        <div class="current-text">كلمة السر</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <input type="text" data-key="pin.title" placeholder="اتركيه فارغًا إن لم يتغيّر">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">pin.subtitle</div>
+        <label>النص الحالي</label>
+        <div class="current-text">في إيدك المفتاح 🔑</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <input type="text" data-key="pin.subtitle" placeholder="اتركيه فارغًا إن لم يتغيّر">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">pin.error</div>
+        <label>النص الحالي</label>
+        <div class="current-text">كود غلط، حاولي تاني 💔</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <input type="text" data-key="pin.error" placeholder="اتركيه فارغًا إن لم يتغيّر">
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       3. OPENING LETTER
+  ════════════════════════════════ -->
+  <div class="section-block">
+    <header>
+      <span class="icon">💌</span>
+      <h2>الرسالة الافتتاحية</h2>
+      <small>7 فقرات</small>
+    </header>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">letter.1</div>
+        <label>النص الحالي</label>
+        <div class="current-text">من يوم ما دخلتي حياتي وانتي بتضحكي ضحكتك الحلوة دي، الدنيا بقت شكل تاني.</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <textarea data-key="letter.1" rows="3" placeholder="اتركيه فارغًا إن لم يتغيّر"></textarea>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">letter.2</div>
+        <label>النص الحالي</label>
+        <div class="current-text">لسه فاكر أول مرة شفتك، في درس الجيولوجيا، وانا مش مصدق إزاي حبيت بنت من أول نظرة... حتى الكروكس بتاعك عجبني!</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <textarea data-key="letter.2" rows="3" placeholder="اتركيه فارغًا إن لم يتغيّر"></textarea>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">letter.3</div>
+        <label>النص الحالي</label>
+        <div class="current-text">من الواتساب للسناب شات، الكلام كان بيحلى كل يوم أكتر من اللي قبله،</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <textarea data-key="letter.3" rows="2" placeholder="اتركيه فارغًا إن لم يتغيّر"></textarea>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">letter.4</div>
+        <label>النص الحالي</label>
+        <div class="current-text">لحد ما بقينا مع بعض في 26 يونيو 2022، في نص امتحانات الثانوية العامة اللي كانت ضغط عالكل إلا إحنا الاتنين.</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <textarea data-key="letter.4" rows="3" placeholder="اتركيه فارغًا إن لم يتغيّر"></textarea>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">letter.5</div>
+        <label>النص الحالي</label>
+        <div class="current-text">دلوقتي بقالنا تقريبا 5 سنين، وانتي كل يوم بتثبتيلي إني اخترت صح.</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <textarea data-key="letter.5" rows="2" placeholder="اتركيه فارغًا إن لم يتغيّر"></textarea>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">letter.6</div>
+        <label>النص الحالي</label>
+        <div class="current-text">مش بس حبيبتي، إنتي أعز صحابي كمان، اللي أقدر أقعد معاها ساعات وماللش.</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <textarea data-key="letter.6" rows="2" placeholder="اتركيه فارغًا إن لم يتغيّر"></textarea>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">letter.7</div>
+        <label>النص الحالي</label>
+        <div class="current-text">كل سنة وانتي طيبة يا حبيبة.</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <textarea data-key="letter.7" rows="2" placeholder="اتركيه فارغًا إن لم يتغيّر"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       4. TIMELINE
+  ════════════════════════════════ -->
+  <div class="section-block">
+    <header>
+      <span class="icon">🗓️</span>
+      <h2>رحلتنا (التايم لاين)</h2>
+      <small>7 عناصر</small>
+    </header>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">timeline.title</div>
+        <label>النص الحالي</label>
+        <div class="current-text">رحلتنا</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <input type="text" data-key="timeline.title" placeholder="اتركيه فارغًا إن لم يتغيّر">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">timeline.1.date</div>
+        <label>النص الحالي</label>
+        <div class="current-text">درس الجيولوجيا</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <input type="text" data-key="timeline.1.date" placeholder="اتركيه فارغًا إن لم يتغيّر">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">timeline.1.caption</div>
+        <label>النص الحالي</label>
+        <div class="current-text">أول مرة شفتك... ولسه فاكر كل تفصيلة، حتى الكروكس!</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <textarea data-key="timeline.1.caption" rows="2" placeholder="اتركيه فارغًا إن لم يتغيّر"></textarea>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">timeline.2.date</div>
+        <label>النص الحالي</label>
+        <div class="current-text">26 يونيو 2022</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <input type="text" data-key="timeline.2.date" placeholder="اتركيه فارغًا إن لم يتغيّر">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">timeline.2.caption</div>
+        <label>النص الحالي</label>
+        <div class="current-text">في نص ضغط الثانوية العامة، قررنا نبقى مع بعض... أحسن قرار في حياتي.</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <textarea data-key="timeline.2.caption" rows="2" placeholder="اتركيه فارغًا إن لم يتغيّر"></textarea>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">timeline.3.date</div>
+        <label>النص الحالي</label>
+        <div class="current-text">دلوقتي</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <input type="text" data-key="timeline.3.date" placeholder="اتركيه فارغًا إن لم يتغيّر">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">timeline.3.caption</div>
+        <label>النص الحالي</label>
+        <div class="current-text">بقالنا تقريبا 5 سنين، وكل يوم بحبك أكتر من اللي قبله.</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <textarea data-key="timeline.3.caption" rows="2" placeholder="اتركيه فارغًا إن لم يتغيّر"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       5. GIFT HUNT
+  ════════════════════════════════ -->
+  <div class="section-block">
+    <header>
+      <span class="icon">🎁</span>
+      <h2>رحلة الهدايا</h2>
+      <small>4 عناصر</small>
+    </header>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">gift.title</div>
+        <label>النص الحالي</label>
+        <div class="current-text">رحلة الهدايا</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <input type="text" data-key="gift.title" placeholder="اتركيه فارغًا إن لم يتغيّر">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">gift.1.caption</div>
+        <label>النص الحالي</label>
+        <div class="current-text">دورت كتير عشان ألاقيلك حاجة تستاهلك... شوفي هلاقيت ايه!</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <textarea data-key="gift.1.caption" rows="2" placeholder="اتركيه فارغًا إن لم يتغيّر"></textarea>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">gift.2.caption</div>
+        <label>النص الحالي</label>
+        <div class="current-text">مكملين الرحلة... في حاجة تانية مستنياكي!</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <textarea data-key="gift.2.caption" rows="2" placeholder="اتركيه فارغًا إن لم يتغيّر"></textarea>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">gift.3.caption</div>
+        <label>النص الحالي</label>
+        <div class="current-text">وده آخر حاجة... يارب تعجبك زي ما انتي عاجباني.</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <textarea data-key="gift.3.caption" rows="2" placeholder="اتركيه فارغًا إن لم يتغيّر"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       6. 22 REASONS
+  ════════════════════════════════ -->
+  <div class="section-block">
+    <header>
+      <span class="icon">💛</span>
+      <h2>22 سبب بحبك عشانهم</h2>
+      <small>23 عنصر (العنوان + 22 سبب)</small>
+    </header>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">reasons.title</div>
+        <label>النص الحالي</label>
+        <div class="current-text">22 سبب بحبك عشانهم</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <input type="text" data-key="reasons.title" placeholder="اتركيه فارغًا إن لم يتغيّر">
+      </div>
+    </div>
+
+    <div id="reasons-rows">
+      <!-- injected by JS below -->
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       7. GALLERY TITLE
+  ════════════════════════════════ -->
+  <div class="section-block">
+    <header>
+      <span class="icon">📷</span>
+      <h2>عنوان الألبوم</h2>
+      <small>عنصر واحد</small>
+    </header>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">gallery.title</div>
+        <label>النص الحالي</label>
+        <div class="current-text">لحظات من عمرنا</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <input type="text" data-key="gallery.title" placeholder="اتركيه فارغًا إن لم يتغيّر">
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       8. OUR MOMENTS
+  ════════════════════════════════ -->
+  <div class="section-block">
+    <header>
+      <span class="icon">🎬</span>
+      <h2>لحظاتنا (الفيديوهات)</h2>
+      <small>3 عناصر</small>
+    </header>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">moments.title</div>
+        <label>النص الحالي</label>
+        <div class="current-text">لحظاتنا</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <input type="text" data-key="moments.title" placeholder="اتركيه فارغًا إن لم يتغيّر">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">moments.1.caption</div>
+        <label>النص الحالي</label>
+        <div class="current-text">من أحلى اللحظات اللي عشناها مع بعض.</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <textarea data-key="moments.1.caption" rows="2" placeholder="اتركيه فارغًا إن لم يتغيّر"></textarea>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">moments.2.caption</div>
+        <label>النص الحالي</label>
+        <div class="current-text">لسه فاكر كل ثانية فيها، وكل يوم بستنى نعمل ذكريات أكتر.</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <textarea data-key="moments.2.caption" rows="2" placeholder="اتركيه فارغًا إن لم يتغيّر"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       9. CLOSING LETTER
+  ════════════════════════════════ -->
+  <div class="section-block">
+    <header>
+      <span class="icon">💬</span>
+      <h2>الرسالة الختامية (الظرف)</h2>
+      <small>5 فقرات</small>
+    </header>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">closing.1</div>
+        <label>النص الحالي</label>
+        <div class="current-text">يا حبيبة،</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <input type="text" data-key="closing.1" placeholder="اتركيه فارغًا إن لم يتغيّر">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">closing.2</div>
+        <label>النص الحالي</label>
+        <div class="current-text">بقالنا تقريبا 5 سنين من يوم درس الجيولوجيا اللي غيّر حياتي، ومن يوم 26 يونيو 2022 اللي قررنا فيه نبقى مع بعض في أصعب وقت.</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <textarea data-key="closing.2" rows="3" placeholder="اتركيه فارغًا إن لم يتغيّر"></textarea>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">closing.3</div>
+        <label>النص الحالي</label>
+        <div class="current-text">النهارده انتي بتكبري سنة، وأنا مبسوط إني هكبر كل سنة جنبك.</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <textarea data-key="closing.3" rows="2" placeholder="اتركيه فارغًا إن لم يتغيّر"></textarea>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">closing.4</div>
+        <label>النص الحالي</label>
+        <div class="current-text">كل سنة وانتي طيبة يا اجمل حاجة حصلتلي، وربنا يخليكي ليا ونكمل الطريق ده مع بعض.</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <textarea data-key="closing.4" rows="2" placeholder="اتركيه فارغًا إن لم يتغيّر"></textarea>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">closing.5</div>
+        <label>النص الحالي</label>
+        <div class="current-text">بحبك.</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <input type="text" data-key="closing.5" placeholder="اتركيه فارغًا إن لم يتغيّر">
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       10. FOOTER + MISC
+  ════════════════════════════════ -->
+  <div class="section-block">
+    <header>
+      <span class="icon">🎂</span>
+      <h2>الفوتر وعناصر أخرى</h2>
+      <small>4 عناصر</small>
+    </header>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">footer.text</div>
+        <label>النص الحالي</label>
+        <div class="current-text">كل سنة وانتي طيبة يا حبيبة 🎂❤️</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <input type="text" data-key="footer.text" placeholder="اتركيه فارغًا إن لم يتغيّر">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">celebrate.btn</div>
+        <label>النص الحالي</label>
+        <div class="current-text">كل سنة وانتي طيبة</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <input type="text" data-key="celebrate.btn" placeholder="اتركيه فارغًا إن لم يتغيّر">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">envelope.hint</div>
+        <label>النص الحالي</label>
+        <div class="current-text">اضغطي لتفتحي الرسالة</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <input type="text" data-key="envelope.hint" placeholder="اتركيه فارغًا إن لم يتغيّر">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="row-key">page.title</div>
+        <label>النص الحالي</label>
+        <div class="current-text">Sweet 22 — حبيبة ❤️</div>
+      </div>
+      <div class="col">
+        <label>النص الجديد</label>
+        <input type="text" data-key="page.title" placeholder="اتركيه فارغًا إن لم يتغيّر">
+      </div>
+    </div>
+  </div>
+
+  <!-- Fixed bottom toolbar -->
+  <div class="toolbar">
+    <div class="toolbar-info">
+      <strong id="change-count">0</strong> تغيير مسجّل
+    </div>
+    <button class="btn-export" id="export-btn">
+      ⬇️ تصدير ملف التغييرات
+    </button>
+  </div>
+
+
+  <script>
+    /* ── Inject the 22 Reasons rows ── */
+    const reasons = [
+      "عشان ضحكتك أول حاجة بتفرحني في يومي.",
+      "عشان لما بقعد معاكي حاسس إني قاعد مع أعز صحابي.",
+      "عشان من أول نظرة وانا حاسس إن في حاجة مختلفة فيكي (حتى الكروكس بتاعتك!).",
+      "عشان دمك خفيف وعمرك ما بتخليني أزهق.",
+      "عشان دماغك حلوة وبتفكري صح في كل حاجة.",
+      "عشان اخترتي تبقي معايا في أصعب وقت - نص امتحانات الثانوية.",
+      "عشان من الواتساب للسناب شات لحد دلوقتي، الكلام لسه بيحلى.",
+      "عشان بتفهميني من غير ما أشرح كتير.",
+      "عشان بتضحكي على هزاري حتى لو مش بتاع حاجة.",
+      "عشان بتقولي \"عينك هي الحلوة\" كل ما أقولك انتي حلوة، وده بيخليني أحبك أكتر.",
+      "عشان صبرك في المذاكرة والتمرين بيلهمني.",
+      "عشان بتحاولي دايما وانتي متعبة.",
+      "عشان قدرتي تكوني حبيبتي وصاحبتي في نفس الوقت.",
+      "عشان بتتحملي بعدي (من الزقازيق لبدر) وانا بتحمل بعدك.",
+      "عشان بنكبر مع بعض - سنة رابعة طب وصيدلة مع بعض.",
+      "عشان بتدعميني حتى وانتي مش قادرة تدعمي نفسك.",
+      "عشان بتشتغلي بجد في التمرين، وده بيخليني فخور بيكي.",
+      "عشان لسه بتحسسيني إني محظوظ إني اخترتك من أول يوم.",
+      "عشان مع كل اللي بيحصل، لسه اخترتي تفضلي جنبي.",
+      "عشان بقالنا تقريبا 5 سنين وكل يوم بيحسسني إنه أول يوم.",
+      "عشان انتي مش بس حبيبتي دلوقتي، انتي المستقبل اللي باحلم بيه.",
+      "عشان انتي حبيبة... وعمرك ما هتبقي حاجة عادية بالنسبالي."
+    ];
+
+    const container = document.getElementById('reasons-rows');
+    reasons.forEach((r, i) => {
+      const num = i + 1;
+      const row = document.createElement('div');
+      row.className = 'row';
+      row.innerHTML = `
+        <div class="col">
+          <div class="row-key">reason.${num}</div>
+          <label>النص الحالي</label>
+          <div class="current-text">${r}</div>
+        </div>
+        <div class="col">
+          <label>النص الجديد</label>
+          <textarea data-key="reason.${num}" rows="2" placeholder="اتركيه فارغًا إن لم يتغيّر"></textarea>
+        </div>`;
+      container.appendChild(row);
+    });
+
+    /* ── Live change counter ── */
+    let changeCount = 0;
+    const countEl = document.getElementById('change-count');
+
+    document.addEventListener('input', e => {
+      const el = e.target;
+      if (!el.dataset.key) return;
+      const val = el.value.trim();
+      el.classList.toggle('changed', val.length > 0);
+      countEl.textContent = document.querySelectorAll('[data-key].changed').length;
+    });
+
+    /* ── Export ── */
+    document.getElementById('export-btn').addEventListener('click', () => {
+      const fields = document.querySelectorAll('[data-key]');
+      const lines = [];
+      const changed = [];
+
+      fields.forEach(el => {
+        const val = el.value.trim();
+        if (val) changed.push({ key: el.dataset.key, value: val });
+      });
+
+      if (!changed.length) {
+        alert('لم تُدخلي أي تغييرات بعد!');
+        return;
+      }
+
+      lines.push('=== Sweet 22 — ملف التغييرات ===');
+      lines.push(`التاريخ: ${new Date().toLocaleString('ar-EG')}`);
+      lines.push(`عدد التغييرات: ${changed.length}`);
+      lines.push('');
+      lines.push('─'.repeat(40));
+      lines.push('');
+
+      changed.forEach(({ key, value }) => {
+        lines.push(`[${key}]`);
+        lines.push(value);
+        lines.push('');
+      });
+
+      lines.push('─'.repeat(40));
+      lines.push('=== نهاية الملف ===');
+
+      const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href     = url;
+      a.download = 'sweet22-changes.txt';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+  </script>
+</body>
+</html>
