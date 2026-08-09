@@ -103,7 +103,7 @@ const SVG_ICONS = {
 function initPinGate() {
   const CORRECT_PIN = '3009';
   const gate    = document.getElementById('pin-gate');
-  const dots    = document.querySelectorAll('.pin-dot');
+  const dots    = document.querySelectorAll('#pin-dots .pin-dot');
   const dotsWrap= document.getElementById('pin-dots');
   const errEl   = document.getElementById('pin-error');
   const pad     = document.getElementById('pin-pad');
@@ -136,8 +136,10 @@ function initPinGate() {
 
   function check() {
     if (entered === CORRECT_PIN) {
-      // Turn dots green
+      // Turn main dots green
       dots.forEach(d => d.classList.add('success'));
+      // Remove main keyboard handler immediately
+      document.removeEventListener('keydown', siteKeyHandler);
       // Unlock gate + open curtain + restore body scrolling
       setTimeout(() => {
         gate.classList.add('unlock');
@@ -185,14 +187,15 @@ function initPinGate() {
   document.getElementById('pin-clear').addEventListener('click', pop);
 
   // Physical keyboard support
-  document.addEventListener('keydown', function handler(e) {
-    if (gate.style.display === 'none') {
-      document.removeEventListener('keydown', handler);
+  function siteKeyHandler(e) {
+    if (gate.style.display === 'none' || gate.classList.contains('unlock')) {
+      document.removeEventListener('keydown', siteKeyHandler);
       return;
     }
     if (e.key >= '0' && e.key <= '9') { pushDigit(e.key); hideError(); }
     if (e.key === 'Backspace') pop();
-  });
+  }
+  document.addEventListener('keydown', siteKeyHandler);
 }
 
 /* ════ GIFT HUNT PIN GATE (1208) ═════════════════════════════ */
@@ -204,6 +207,7 @@ function initGiftPinGate() {
   const dotsWrap    = document.getElementById('gift-pin-dots');
   const errEl       = document.getElementById('gift-pin-error');
   const pad         = document.getElementById('gift-pin-pad');
+  const gate        = document.getElementById('pin-gate');
 
   if (!vaultCard || !unlockedContent) return;
 
@@ -236,6 +240,7 @@ function initGiftPinGate() {
     if (entered === CORRECT_PIN) {
       dots.forEach(d => d.classList.add('success'));
       vaultCard.classList.add('unlock');
+      document.removeEventListener('keydown', giftKeyHandler);
       setTimeout(() => {
         vaultCard.style.display = 'none';
         unlockedContent.style.display = 'block';
@@ -264,7 +269,7 @@ function initGiftPinGate() {
     pad.addEventListener('click', e => {
       const key = e.target.closest('.pin-key');
       if (!key) return;
-      const digit = key.dataset.gdigit;
+      const digit = key.dataset.gdigit || key.dataset.digit;
       if (digit !== undefined) {
         pushDigit(digit);
         hideError();
@@ -273,10 +278,17 @@ function initGiftPinGate() {
   }
 
   const clearBtn = document.getElementById('gift-pin-clear');
-  if (clearBtn) clearBtn.addEventListener('click', pop);
+  if (clearBtn) {
+    clearBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      pop();
+    });
+  }
 
-  document.addEventListener('keydown', function(e) {
-    if (vaultCard.style.display === 'none') return;
+  function giftKeyHandler(e) {
+    // Only accept keyboard when main site PIN is unlocked
+    if (gate && gate.style.display !== 'none' && !gate.classList.contains('unlock')) return;
+    if (vaultCard.style.display === 'none' || vaultCard.classList.contains('unlock')) return;
 
     const rect = vaultCard.getBoundingClientRect();
     const inView = rect.top < window.innerHeight && rect.bottom > 0;
@@ -284,7 +296,9 @@ function initGiftPinGate() {
 
     if (e.key >= '0' && e.key <= '9') { pushDigit(e.key); hideError(); }
     if (e.key === 'Backspace') pop();
-  });
+  }
+
+  document.addEventListener('keydown', giftKeyHandler);
 }
 
 /* ════ FAST & RELIABLE PRELOADER ════════════════════════════ */
