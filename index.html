@@ -25,6 +25,62 @@
     <div class="curtain-glow"></div>
   </div>
 
+  <!-- ════ PIN GATE ══════════════════════════════════════ -->
+  <div id="pin-gate" role="dialog" aria-modal="true" aria-label="أدخلي الكود السري">
+
+    <!-- Ambient blobs -->
+    <div class="pin-blob pin-blob-1" aria-hidden="true"></div>
+    <div class="pin-blob pin-blob-2" aria-hidden="true"></div>
+
+    <div class="pin-card">
+
+      <!-- Lock icon -->
+      <div class="pin-lock-icon" aria-hidden="true">
+        <svg viewBox="0 0 48 48" width="52" height="52" fill="none">
+          <rect x="8" y="22" width="32" height="22" rx="6" fill="currentColor" opacity="0.18"/>
+          <rect x="8" y="22" width="32" height="22" rx="6" stroke="currentColor" stroke-width="2.2"/>
+          <path d="M16 22V16a8 8 0 0 1 16 0v6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+          <circle cx="24" cy="33" r="3" fill="currentColor"/>
+        </svg>
+      </div>
+
+      <h2 class="pin-title">كلمة السر</h2>
+      <p class="pin-subtitle">في إيدك المفتاح 🔑</p>
+
+      <!-- 4-dot display -->
+      <div class="pin-dots" id="pin-dots" aria-live="polite" aria-label="الكود المُدخل">
+        <div class="pin-dot" id="pd0"></div>
+        <div class="pin-dot" id="pd1"></div>
+        <div class="pin-dot" id="pd2"></div>
+        <div class="pin-dot" id="pd3"></div>
+      </div>
+
+      <!-- Error message -->
+      <div class="pin-error" id="pin-error" aria-live="assertive">كود غلط، حاولي تاني 💔</div>
+
+      <!-- Numpad -->
+      <div class="pin-pad" id="pin-pad">
+        <button class="pin-key" data-digit="1">1</button>
+        <button class="pin-key" data-digit="2">2</button>
+        <button class="pin-key" data-digit="3">3</button>
+        <button class="pin-key" data-digit="4">4</button>
+        <button class="pin-key" data-digit="5">5</button>
+        <button class="pin-key" data-digit="6">6</button>
+        <button class="pin-key" data-digit="7">7</button>
+        <button class="pin-key" data-digit="8">8</button>
+        <button class="pin-key" data-digit="9">9</button>
+        <button class="pin-key pin-key-clear" id="pin-clear" aria-label="مسح">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 12H4M4 12l6-6M4 12l6 6"/>
+          </svg>
+        </button>
+        <button class="pin-key" data-digit="0">0</button>
+        <div class="pin-key pin-key-empty" aria-hidden="true"></div>
+      </div>
+
+    </div>
+  </div>
+
   <!-- ════ PRELOADER ══════════════════════════════════════ -->
   <div id="preloader" role="status" aria-label="جاري تحميل الموقع">
 

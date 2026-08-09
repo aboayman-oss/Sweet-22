@@ -99,6 +99,101 @@ const SVG_ICONS = {
   sparkleMini: `<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 0L14.5 9.5L24 12L14.5 14.5L12 24L9.5 14.5L0 12L9.5 9.5L12 0Z"/></svg>`
 };
 
+/* ════ PIN GATE ══════════════════════════════════════════════ */
+function initPinGate() {
+  const CORRECT_PIN = '3009';
+  const gate    = document.getElementById('pin-gate');
+  const dots    = document.querySelectorAll('.pin-dot');
+  const dotsWrap= document.getElementById('pin-dots');
+  const errEl   = document.getElementById('pin-error');
+  const pad     = document.getElementById('pin-pad');
+
+  let entered = '';
+
+  // Show the gate
+  gate.classList.add('visible');
+
+  function updateDots() {
+    dots.forEach((d, i) => {
+      d.classList.toggle('filled', i < entered.length);
+      d.classList.remove('success');
+    });
+  }
+
+  function pushDigit(d) {
+    if (entered.length >= 4) return;
+    entered += d;
+    updateDots();
+    if (entered.length === 4) {
+      setTimeout(check, 120);
+    }
+  }
+
+  function pop() {
+    if (!entered.length) return;
+    entered = entered.slice(0, -1);
+    updateDots();
+    hideError();
+  }
+
+  function check() {
+    if (entered === CORRECT_PIN) {
+      // Turn dots green
+      dots.forEach(d => d.classList.add('success'));
+      // Fade out gate after brief celebration
+      setTimeout(() => {
+        gate.classList.add('unlock');
+        setTimeout(() => {
+          gate.style.display = 'none';
+          gate.classList.remove('visible', 'unlock');
+        }, 580);
+      }, 480);
+    } else {
+      // Shake + error
+      dotsWrap.classList.remove('shake');
+      void dotsWrap.offsetWidth;       // reflow to restart animation
+      dotsWrap.classList.add('shake');
+      showError();
+      setTimeout(() => {
+        entered = '';
+        updateDots();
+        dotsWrap.classList.remove('shake');
+      }, 500);
+    }
+  }
+
+  function showError() {
+    errEl.classList.add('show');
+  }
+  function hideError() {
+    errEl.classList.remove('show');
+  }
+
+  // Numpad clicks
+  pad.addEventListener('click', e => {
+    const key = e.target.closest('.pin-key');
+    if (!key) return;
+    const digit = key.dataset.digit;
+    if (digit !== undefined) {
+      pushDigit(digit);
+      hideError();
+    }
+  });
+
+  // Clear/backspace button
+  document.getElementById('pin-clear').addEventListener('click', pop);
+
+  // Physical keyboard support
+  document.addEventListener('keydown', function handler(e) {
+    if (!gate.classList.contains('visible')) {
+      document.removeEventListener('keydown', handler);
+      return;
+    }
+    if (e.key >= '0' && e.key <= '9') { pushDigit(e.key); hideError(); }
+    if (e.key === 'Backspace') pop();
+  });
+}
+
 /* ════ FAST & RELIABLE PRELOADER ════════════════════════════ */
 function initPreloader() {
   const preloader   = document.getElementById('preloader');
@@ -145,6 +240,8 @@ function initPreloader() {
       setTimeout(() => {
         preloader.style.display = 'none';
         curtain.style.display   = 'none';
+        // ── Show PIN gate after preloader fully hides ──
+        initPinGate();
       }, 900);
     }, 400);
   }
