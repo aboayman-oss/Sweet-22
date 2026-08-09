@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="كل سنة وانتي طيبة يا حبيبة — هدية عيد ميلاد حبيبة الـ 22">
+  <title>Sweet 22 — حبيبة ❤️</title>
+
+  <!-- Arabic Google Fonts: Rakkas (display) + Cairo (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rakkas&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ════ AMBIENT PARTICLE CANVAS ════════════════════════ -->
+  <canvas id="ambient-canvas" aria-hidden="true"></canvas>
+
+  <!-- ════ CURTAIN REVEAL (over the preloader) ═══════════ -->
+  <div class="curtain" id="curtain" aria-hidden="true">
+    <div class="curtain-half left"></div>
+    <div class="curtain-half right"></div>
+    <div class="curtain-glow"></div>
+  </div>
+
+  <!-- ════ PRELOADER ══════════════════════════════════════ -->
+  <div id="preloader" role="status" aria-label="جاري تحميل الموقع">
+
+    <!-- Enhanced SVG Birthday Cake -->
+    <div class="preloader-cake-container" aria-hidden="true">
+      <svg class="cake-svg" viewBox="0 0 160 180" width="160" height="180">
+        <defs>
+          <linearGradient id="cakeBaseGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f5e0dd" />
+            <stop offset="50%" stop-color="#e8b4ad" />
+            <stop offset="100%" stop-color="#c8958c" />
+          </linearGradient>
+          <linearGradient id="cakeFillGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+            <stop offset="0%" stop-color="#a0706a" />
+            <stop offset="50%" stop-color="#c8958c" />
+            <stop offset="100%" stop-color="#e8b4ad" />
+          </linearGradient>
+          <linearGradient id="frostingGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#ffffff" />
+            <stop offset="50%" stop-color="#f5e0dd" />
+            <stop offset="100%" stop-color="#ecc9c5" />
+          </linearGradient>
+          <filter id="flameGlow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
+        <!-- Cake Plate -->
+        <ellipse cx="80" cy="162" rx="70" ry="10" fill="#ecc9c5" opacity="0.6" />
+        <ellipse cx="80" cy="160" rx="65" ry="8" fill="#ffffff" />
+
+        <!-- Cake Bottom Tier -->
+        <path d="M 25,120 L 25,155 Q 25,160 30,160 L 130,160 Q 135,160 135,155 L 135,120 Z" fill="url(#cakeBaseGrad)" />
+
+        <!-- Liquid Progress Fill Masked -->
+        <mask id="cakeFillMask">
+          <rect id="cake-fill-rect" x="25" y="160" width="110" height="0" fill="#ffffff" />
+        </mask>
+        <path d="M 25,120 L 25,155 Q 25,160 30,160 L 130,160 Q 135,160 135,155 L 135,120 Z" fill="url(#cakeFillGrad)" mask="url(#cakeFillMask)" />
+
+        <!-- Decorative Frosting Drips -->
+        <path d="M 25,120 Q 38,132 50,120 Q 63,132 75,120 Q 88,132 100,120 Q 113,132 125,120 Q 135,128 135,120 L 135,115 L 25,115 Z" fill="url(#frostingGrad)" />
+
+        <!-- Cake Top Tier -->
+        <path d="M 40,85 L 40,115 L 120,115 L 120,85 Z" fill="url(#cakeBaseGrad)" />
+        <path d="M 40,85 Q 52,95 64,85 Q 76,95 88,85 Q 100,95 112,85 Q 120,92 120,85 L 120,80 L 40,80 Z" fill="url(#frostingGrad)" />
+
+        <!-- 3 Candles -->
+        <!-- Candle 1 -->
+        <rect x="52" y="55" width="8" height="28" rx="3" fill="#e8b4ad" />
+        <line x1="56" y1="48" x2="56" y2="55" stroke="#6b4c48" stroke-width="1.5" stroke-linecap="round" />
+        <!-- Candle 2 (Center) -->
+        <rect x="76" y="48" width="8" height="35" rx="3" fill="#d4a96a" />
+        <line x1="80" y1="41" x2="80" y2="48" stroke="#6b4c48" stroke-width="1.5" stroke-linecap="round" />
+        <!-- Candle 3 -->
+        <rect x="100" y="55" width="8" height="28" rx="3" fill="#ecc9c5" />
+        <line x1="104" y1="48" x2="104" y2="55" stroke="#6b4c48" stroke-width="1.5" stroke-linecap="round" />
+
+        <!-- Flame 1 -->
+        <g class="flame-group flame" id="flame-0" opacity="0">
+          <path d="M 56,34 C 52,40 54,46 56,48 C 58,46 60,40 56,34 Z" fill="#ff9800" filter="url(#flameGlow)" />
+          <path d="M 56,38 C 54,42 55,46 56,47 C 57,46 58,42 56,38 Z" fill="#ffeb3b" />
+        </g>
+        <!-- Flame 2 -->
+        <g class="flame-group flame" id="flame-1" opacity="0">
+          <path d="M 80,27 C 76,33 78,39 80,41 C 82,39 84,33 80,27 Z" fill="#ff9800" filter="url(#flameGlow)" />
+          <path d="M 80,31 C 78,35 79,39 80,40 C 81,39 82,35 80,31 Z" fill="#ffeb3b" />
+        </g>
+        <!-- Flame 3 -->
+        <g class="flame-group flame" id="flame-2" opacity="0">
+          <path d="M 104,34 C 100,40 102,46 104,48 C 106,46 108,40 104,34 Z" fill="#ff9800" filter="url(#flameGlow)" />
+          <path d="M 104,38 C 102,42 103,46 104,47 C 105,46 106,42 104,38 Z" fill="#ffeb3b" />
+        </g>
+      </svg>
+    </div>
+
+    <div class="preloader-text">جاري التحضير...</div>
+    <div class="preloader-pct" id="preloader-pct">0%</div>
+
+    <!-- Progress bar -->
+    <div class="preloader-bar-wrap" aria-hidden="true">
+      <div class="preloader-bar" id="preloader-bar"></div>
+    </div>
+
+  </div><!-- /preloader -->
+
+
+  <!-- ════════════════════════════════════════════════════
+       MAIN CONTENT
+       ════════════════════════════════════════════════════ -->
+
+  <!-- ── 1. HERO ─────────────────────────────────────── -->
+  <section id="hero" aria-label="صفحة البداية">
+
+    <!-- Background image (portrait 3:4) -->
+    <div class="hero-bg hero-bg-placeholder" id="hero-bg" aria-hidden="true">
+      <img data-preload
+           src="assets/images/hero.jpg"
+           alt=""
+           aria-hidden="true"
+           style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 0.5s ease"
+           onload="this.style.opacity='1'; document.getElementById('hero-bg').style.background='none'">
+    </div>
+
+    <div class="hero-overlay" aria-hidden="true"></div>
+
+    <div class="hero-content">
+      <div class="hero-name" id="hero-name">حبيبة</div>
+      <div class="hero-age-container">
+        <span class="hero-age" id="hero-age">22</span>
+        <svg class="hero-sparkle-svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" fill="url(#cakeFillGrad)" />
+        </svg>
+      </div>
+      <p class="hero-tagline" id="hero-tagline">كل سنة وانتي طيبة يا اجمل حاجة حصلتلي</p>
+
+      <!-- Sleek Animated SVG Scroll Arrow -->
+      <div class="hero-scroll-hint" aria-hidden="true">
+        <svg class="scroll-arrow-svg" viewBox="0 0 24 32" width="28" height="36">
+          <path d="M12 4 L12 22 M5 15 L12 22 L19 15" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+        </svg>
+      </div>
+    </div>
+
+  </section>
+
+
+  <!-- ── 2. OPENING LETTER ───────────────────────────── -->
+  <section id="opening-letter" aria-labelledby="letter-heading">
+    <div class="section-22-bg" aria-hidden="true">22</div>
+
+    <div class="letter-wrap">
+      <div class="letter-paper reveal">
+        <!-- SVG Watermark Flourish -->
+        <svg class="letter-watermark-svg" viewBox="0 0 100 100" aria-hidden="true">
+          <path d="M50 88 C20 60 5 40 5 25 C5 12 16 3 30 3 C40 3 47 9 50 15 C53 9 60 3 70 3 C84 3 95 12 95 25 C95 40 80 60 50 88 Z" fill="none" stroke="currentColor" stroke-width="2" opacity="0.12"/>
+        </svg>
+
+        <div id="letter-lines" role="article">
+          <!-- Lines injected by JS from content.openingLetter -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ── 3. TIMELINE ────────────────────────────────── -->
+  <section id="timeline" aria-labelledby="timeline-heading">
+
+    <div class="timeline-spine" aria-hidden="true"></div>
+
+    <h2 class="section-title reveal" id="timeline-heading">
+      <span id="timeline-title-text">رحلتنا</span>
+    </h2>
+
+    <div class="timeline-items" id="timeline-items">
+      <!-- Cards injected by JS -->
+    </div>
+
+  </section>
+
+
+  <!-- ── 4. GIFT HUNT ────────────────────────────────── -->
+  <section id="gift-hunt" aria-labelledby="gift-heading">
+    <div class="section-22-bg" aria-hidden="true">22</div>
+
+    <h2 class="section-title reveal" id="gift-heading">
+      <span id="gift-title-text">رحلة الهدايا</span>
+    </h2>
+
+    <div class="gift-hunt-wrap">
+
+      <!-- Step dots -->
+      <div class="gift-counter" id="gift-dots" aria-hidden="true"></div>
+
+      <!-- Video steps (injected by JS) -->
+      <div id="gift-steps"></div>
+
+      <button id="gift-next-btn" class="gift-next-btn ripple-btn" aria-label="الخطوة التالية">
+        <span>التالي</span>
+        <svg class="btn-arrow-svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+      </button>
+
+    </div>
+  </section>
+
+
+  <!-- ── 5. 22 REASONS ─────────────────────────────── -->
+  <section id="reasons" aria-labelledby="reasons-heading">
+
+    <h2 class="section-title reveal" id="reasons-heading">
+      <span id="reasons-title-text">22 سبب بحبك عشانهم</span>
+    </h2>
+
+    <div class="reasons-grid" id="reasons-grid">
+      <!-- Cards injected by JS -->
+    </div>
+
+  </section>
+
+
+  <!-- ── 6. PHOTO GALLERY ───────────────────────────── -->
+  <section id="gallery" aria-labelledby="gallery-heading">
+    <div class="section-22-bg" aria-hidden="true">22</div>
+
+    <h2 class="section-title reveal" id="gallery-heading">
+      <span id="gallery-title-text">لحظات من عمرنا</span>
+    </h2>
+
+    <div class="gallery-grid" id="gallery-grid">
+      <!-- Items injected by JS -->
+    </div>
+
+  </section>
+
+  <!-- Lightbox -->
+  <div id="lightbox" role="dialog" aria-modal="true" aria-label="عرض الصورة">
+    <button id="lightbox-close" aria-label="إغلاق">
+      <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+    <img id="lightbox-img" src="" alt="صورة مكبرة" class="lightbox-img">
+  </div>
+
+
+  <!-- ── 7. OUR MOMENTS ─────────────────────────────── -->
+  <section id="our-moments" aria-labelledby="moments-heading">
+
+    <h2 class="section-title reveal" id="moments-heading">
+      <span id="moments-title-text">لحظاتنا</span>
+    </h2>
+
+    <div class="moments-list" id="moments-list">
+      <!-- Items injected by JS -->
+    </div>
+
+  </section>
+
+
+  <!-- ── 8. CLOSING LETTER ──────────────────────────── -->
+  <section id="closing" aria-labelledby="closing-heading">
+    <div class="section-22-bg" aria-hidden="true">22</div>
+
+    <h2 class="section-title reveal" id="closing-heading">
+      <span>رسالة <svg class="inline-heart-svg" viewBox="0 0 24 24" width="26" height="26" fill="var(--rose-gold)"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span>
+    </h2>
+
+    <div class="envelope-wrap">
+      <!-- Envelope / letter — tap to open -->
+      <div class="envelope reveal" id="envelope" role="button" tabindex="0" aria-label="اضغطي لتفتحي الرسالة">
+
+        <!-- Closed state -->
+        <div class="env-closed">
+          <div class="env-flap" aria-hidden="true"></div>
+          <div class="env-closed-inner">
+            <!-- SVG Envelope & Wax Seal -->
+            <div class="wax-seal-svg-wrap">
+              <svg viewBox="0 0 100 100" width="84" height="84">
+                <circle cx="50" cy="50" r="42" fill="#c8958c" stroke="#e8b4ad" stroke-width="3" />
+                <circle cx="50" cy="50" r="35" fill="#a0706a" />
+                <path d="M50 32 C42 24 32 30 32 38 C32 48 50 62 50 62 C50 62 68 48 68 38 C68 30 58 24 50 32 Z" fill="#f5e0dd" />
+                <text x="50" y="74" font-family="Rakkas, serif" font-size="16" fill="#ffffff" text-anchor="middle">22</text>
+              </svg>
+            </div>
+            <div class="env-hint">اضغطي لتفتحي الرسالة</div>
+          </div>
+        </div>
+
+        <!-- Opened letter (content injected by JS) -->
+        <div class="env-letter" id="env-letter">
+          <!-- Paragraphs injected by buildClosingLetter() -->
+          <span class="love-sign">
+            <svg viewBox="0 0 32 32" width="36" height="36" fill="var(--rose-gold-dk)">
+              <path d="M16 28.5l-2.3-2.1C5.5 18.9 2 15.7 2 11.5 2 8 4.7 5.3 8.2 5.3c2 0 3.9.9 5.1 2.4 1.2-1.5 3.1-2.4 5.1-2.4 3.5 0 6.2 2.7 6.2 6.2 0 4.2-3.5 7.4-11.7 14.9L16 28.5z"/>
+            </svg>
+          </span>
+        </div>
+
+      </div>
+    </div>
+
+  </section>
+
+
+  <!-- ── CELEBRATION MOMENT ────────────────────────── -->
+  <div class="celebration-section reveal">
+    <button id="celebrate-btn" class="ripple-btn" aria-label="احتفالي!">
+      <svg class="btn-heart-svg" viewBox="0 0 24 24" width="26" height="26" fill="currentColor">
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+      </svg>
+      <span>كل سنة وانتي طيبة</span>
+    </button>
+  </div>
+
+
+  <!-- ── 9. FOOTER ──────────────────────────────────── -->
+  <footer role="contentinfo">
+    <div class="footer-22" aria-hidden="true">22</div>
+    <div class="footer-text" id="footer-text">كل سنة وانتي طيبة يا حبيبة 🎂❤️</div>
+
+    <!-- Inline Vector SVG Row -->
+    <div class="footer-hearts-svg-row" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="#ecc9c5"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="#fdf6f0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14.5h-2v-2h2v2zm0-4h-2V7h2v5.5z" opacity="0"/></svg>
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="#e8c898"><path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/></svg>
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="#ecc9c5"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+    </div>
+  </footer>
+
+
+  <!-- Confetti canvas (on top of everything) -->
+  <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+
+  <script src="script.js"></script>
+
+</body>
+</html>
