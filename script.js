@@ -195,6 +195,98 @@ function initPinGate() {
   });
 }
 
+/* ════ GIFT HUNT PIN GATE (1208) ═════════════════════════════ */
+function initGiftPinGate() {
+  const CORRECT_PIN = '1208';
+  const vaultCard   = document.getElementById('gift-vault-card');
+  const unlockedContent = document.getElementById('gift-unlocked-content');
+  const dots        = document.querySelectorAll('#gift-pin-dots .pin-dot');
+  const dotsWrap    = document.getElementById('gift-pin-dots');
+  const errEl       = document.getElementById('gift-pin-error');
+  const pad         = document.getElementById('gift-pin-pad');
+
+  if (!vaultCard || !unlockedContent) return;
+
+  let entered = '';
+
+  function updateDots() {
+    dots.forEach((d, i) => {
+      d.classList.toggle('filled', i < entered.length);
+      d.classList.remove('success');
+    });
+  }
+
+  function pushDigit(d) {
+    if (entered.length >= 4) return;
+    entered += d;
+    updateDots();
+    if (entered.length === 4) {
+      setTimeout(check, 120);
+    }
+  }
+
+  function pop() {
+    if (!entered.length) return;
+    entered = entered.slice(0, -1);
+    updateDots();
+    hideError();
+  }
+
+  function check() {
+    if (entered === CORRECT_PIN) {
+      dots.forEach(d => d.classList.add('success'));
+      vaultCard.classList.add('unlock');
+      setTimeout(() => {
+        vaultCard.style.display = 'none';
+        unlockedContent.style.display = 'block';
+      }, 580);
+    } else {
+      dotsWrap.classList.remove('shake');
+      void dotsWrap.offsetWidth;
+      dotsWrap.classList.add('shake');
+      showError();
+      setTimeout(() => {
+        entered = '';
+        updateDots();
+        dotsWrap.classList.remove('shake');
+      }, 500);
+    }
+  }
+
+  function showError() {
+    if (errEl) errEl.classList.add('show');
+  }
+  function hideError() {
+    if (errEl) errEl.classList.remove('show');
+  }
+
+  if (pad) {
+    pad.addEventListener('click', e => {
+      const key = e.target.closest('.pin-key');
+      if (!key) return;
+      const digit = key.dataset.gdigit;
+      if (digit !== undefined) {
+        pushDigit(digit);
+        hideError();
+      }
+    });
+  }
+
+  const clearBtn = document.getElementById('gift-pin-clear');
+  if (clearBtn) clearBtn.addEventListener('click', pop);
+
+  document.addEventListener('keydown', function(e) {
+    if (vaultCard.style.display === 'none') return;
+
+    const rect = vaultCard.getBoundingClientRect();
+    const inView = rect.top < window.innerHeight && rect.bottom > 0;
+    if (!inView) return;
+
+    if (e.key >= '0' && e.key <= '9') { pushDigit(e.key); hideError(); }
+    if (e.key === 'Backspace') pop();
+  });
+}
+
 /* ════ FAST & RELIABLE PRELOADER ════════════════════════════ */
 function initPreloader() {
   const preloader   = document.getElementById('preloader');
@@ -292,6 +384,7 @@ document.addEventListener('DOMContentLoaded', () => {
   buildFooter();
 
   initPinGate();
+  initGiftPinGate();
   initPreloader();
 
   initAmbientCanvas();

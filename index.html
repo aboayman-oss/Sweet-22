@@ -257,19 +257,82 @@
 
     <div class="gift-hunt-wrap">
 
-      <!-- Step dots -->
-      <div class="gift-counter" id="gift-dots" aria-hidden="true"></div>
+      <!-- LOCKED VAULT CARD (Shown until PIN 1208 is entered) -->
+      <div class="gift-vault-card" id="gift-vault-card">
+        <div class="vault-gift-icon" aria-hidden="true">
+          <svg viewBox="0 0 64 64" width="64" height="64" fill="none">
+            <!-- Gift Box Base -->
+            <rect x="10" y="28" width="44" height="30" rx="4" fill="url(#vaultBoxGrad)" stroke="#d4a96a" stroke-width="2"/>
+            <!-- Gift Lid -->
+            <rect x="6" y="20" width="52" height="10" rx="3" fill="#e8b4ad" stroke="#c8958c" stroke-width="2"/>
+            <!-- Vertical Ribbon -->
+            <rect x="28" y="20" width="8" height="38" fill="#d4a96a"/>
+            <!-- Ribbon Bow -->
+            <path d="M 32,20 C 22,8 10,16 28,20 C 36,20 48,16 32,20 Z" fill="#e8c898" stroke="#d4a96a" stroke-width="1.5"/>
+            <!-- Floating Padlock Badge -->
+            <circle cx="46" cy="44" r="12" fill="#a0706a" stroke="#ffffff" stroke-width="2"/>
+            <path d="M 42,42 V 39 A 4,4 0 0,1 50,39 V 42" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+            <rect x="41" y="42" width="10" height="7" rx="1.5" fill="#ffffff"/>
+            <defs>
+              <linearGradient id="vaultBoxGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#f5e0dd"/>
+                <stop offset="100%" stop-color="#ecc9c5"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
 
-      <!-- Video steps (injected by JS) -->
-      <div id="gift-steps"></div>
+        <h3 class="vault-title">رحلة الهدايا مقفولة 🎁🔒</h3>
+        <p class="vault-subtitle">السر هنا مستني وقته... أدخلي الكود عشان تفتحي الهدايا ✨</p>
 
-      <button id="gift-next-btn" class="gift-next-btn ripple-btn" aria-label="الخطوة التالية">
-        <span>التالي</span>
-        <svg class="btn-arrow-svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="19" y1="12" x2="5" y2="12"></line>
-          <polyline points="12 19 5 12 12 5"></polyline>
-        </svg>
-      </button>
+        <!-- 4-dot display -->
+        <div class="pin-dots" id="gift-pin-dots" aria-live="polite" aria-label="الكود المُدخل للهدايا">
+          <div class="pin-dot" id="gpd0"></div>
+          <div class="pin-dot" id="gpd1"></div>
+          <div class="pin-dot" id="gpd2"></div>
+          <div class="pin-dot" id="gpd3"></div>
+        </div>
+
+        <!-- Error message -->
+        <div class="pin-error" id="gift-pin-error" aria-live="assertive">الكود ده مش مظبوط، الهدايا لسه مقفولة! 🔒</div>
+
+        <!-- Mini Numpad -->
+        <div class="pin-pad gift-pin-pad" id="gift-pin-pad">
+          <button class="pin-key" data-gdigit="1">1</button>
+          <button class="pin-key" data-gdigit="2">2</button>
+          <button class="pin-key" data-gdigit="3">3</button>
+          <button class="pin-key" data-gdigit="4">4</button>
+          <button class="pin-key" data-gdigit="5">5</button>
+          <button class="pin-key" data-gdigit="6">6</button>
+          <button class="pin-key" data-gdigit="7">7</button>
+          <button class="pin-key" data-gdigit="8">8</button>
+          <button class="pin-key" data-gdigit="9">9</button>
+          <button class="pin-key pin-key-clear" id="gift-pin-clear" aria-label="مسح">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 12H4M4 12l6-6M4 12l6 6"/>
+            </svg>
+          </button>
+          <button class="pin-key" data-gdigit="0">0</button>
+          <div class="pin-key pin-key-empty" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <!-- UNLOCKED CONTENT (Hidden until PIN 1208 is entered) -->
+      <div class="gift-unlocked-content" id="gift-unlocked-content" style="display: none;">
+        <!-- Step dots -->
+        <div class="gift-counter" id="gift-dots" aria-hidden="true"></div>
+
+        <!-- Video steps (injected by JS) -->
+        <div id="gift-steps"></div>
+
+        <button id="gift-next-btn" class="gift-next-btn ripple-btn" aria-label="الخطوة التالية">
+          <span>التالي</span>
+          <svg class="btn-arrow-svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+      </div>
 
     </div>
   </section>
