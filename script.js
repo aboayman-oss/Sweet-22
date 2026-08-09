@@ -51,7 +51,7 @@ const content = {
     "عشان بتضحكي على هزاري حتى لو مش بتاع حاجة.",
     "عشان بتقولي \"عينك هي الحلوة\" كل ما أقولك انتي حلوة، وده بيخليني أحبك أكتر.",
     "عشان صبرك في المذاكرة والتمرين بيلهمني.",
-    "عشان بتحاولي دايما حتى وانتي متعبة.",
+    "عشان بتحاولي دايما وانتي متعبة.",
     "عشان قدرتي تكوني حبيبتي وصاحبتي في نفس الوقت.",
     "عشان بتتحملي بعدي (من الزقازيق لبدر) وانا بتحمل بعدك.",
     "عشان بنكبر مع بعض - سنة رابعة طب وصيدلة مع بعض.",
@@ -89,12 +89,9 @@ const content = {
 
 /* ════ VECTOR SVG ICONS DICTIONARY ═════════════════════════ */
 const SVG_ICONS = {
-  // Timeline dot icons
   sparkleStar: `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" fill="currentColor"/></svg>`,
   heart: `<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`,
   rose: `<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 2a6 6 0 0 0-6 6c0 3.5 4 8 6 11 2-3 6-7.5 6-11a6 6 0 0 0-6-6zm0 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/></svg>`,
-
-  // Media Placeholders
   camera: `<svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>`,
   giftBox: `<svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>`,
   flower: `<svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3" fill="currentColor"/><path d="M12 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4z" opacity="0.6"/><path d="M12 12a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4z" opacity="0.6"/><path d="M4 12a4 4 0 0 1 4-4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4z" opacity="0.6"/><path d="M12 12a4 4 0 0 1 4-4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4z" opacity="0.6"/></svg>`,
@@ -102,7 +99,7 @@ const SVG_ICONS = {
   sparkleMini: `<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 0L14.5 9.5L24 12L14.5 14.5L12 24L9.5 14.5L0 12L9.5 9.5L12 0Z"/></svg>`
 };
 
-/* ════ PRELOADER ════════════════════════════════════════════ */
+/* ════ FAST & RELIABLE PRELOADER ════════════════════════════ */
 function initPreloader() {
   const preloader   = document.getElementById('preloader');
   const bar         = document.getElementById('preloader-bar');
@@ -111,22 +108,16 @@ function initPreloader() {
   const flames      = document.querySelectorAll('.flame');
   const curtain     = document.getElementById('curtain');
 
-  const USE_METADATA_ONLY = false;
-
-  const imgs   = Array.from(document.querySelectorAll('img[data-preload]'));
-  const videos = Array.from(document.querySelectorAll('video[data-preload]'));
-  const total  = imgs.length + videos.length;
-
-  if (total === 0) { revealSite(); return; }
+  // Track images primarily for fast & reliable preloader reveal
+  const imgs = Array.from(document.querySelectorAll('img[data-preload]'));
+  const total = imgs.length;
 
   let loaded = 0;
+  let revealed = false;
 
-  function onLoad() {
-    loaded++;
-    const p = Math.round((loaded / total) * 100);
-    bar.style.width = p + '%';
-    
-    // SVG Rect Height Fill (0 to 45px)
+  function updateProgress(p) {
+    p = Math.min(100, Math.max(0, p));
+    if (bar) bar.style.width = p + '%';
     if (cakeFillRect) {
       const fillHeight = (p / 100) * 45;
       cakeFillRect.setAttribute('height', fillHeight);
@@ -134,23 +125,18 @@ function initPreloader() {
     }
     if (pct) pct.textContent = p + '%';
 
-    // Light flames progressively
     const flameCount = flames.length;
-    const litCount   = Math.floor((loaded / total) * flameCount);
+    const litCount = Math.floor((p / 100) * flameCount);
     flames.forEach((f, i) => {
       if (i < litCount) f.style.opacity = '1';
     });
-
-    if (loaded >= total) revealSite();
   }
 
   function revealSite() {
-    bar.style.width = '100%';
-    if (cakeFillRect) {
-      cakeFillRect.setAttribute('height', 45);
-      cakeFillRect.setAttribute('y', 115);
-    }
-    if (pct) pct.textContent = '100%';
+    if (revealed) return;
+    revealed = true;
+
+    updateProgress(100);
     flames.forEach(f => f.style.opacity = '1');
 
     setTimeout(() => {
@@ -159,23 +145,38 @@ function initPreloader() {
       setTimeout(() => {
         preloader.style.display = 'none';
         curtain.style.display   = 'none';
-      }, 1100);
-    }, 600);
+      }, 900);
+    }, 400);
   }
 
-  const videoEvent = USE_METADATA_ONLY ? 'loadedmetadata' : 'canplaythrough';
+  // Safety fallback timeout — guarantee site reveals within 1.5s even on slow network
+  const safetyTimer = setTimeout(() => {
+    revealSite();
+  }, 1500);
+
+  if (total === 0) {
+    clearTimeout(safetyTimer);
+    revealSite();
+    return;
+  }
+
+  function onLoad() {
+    loaded++;
+    const p = Math.round((loaded / total) * 100);
+    updateProgress(p);
+    if (loaded >= total) {
+      clearTimeout(safetyTimer);
+      revealSite();
+    }
+  }
 
   imgs.forEach(img => {
-    if (img.complete && img.naturalWidth > 0) { onLoad(); return; }
-    img.addEventListener('load',  onLoad, { once: true });
-    img.addEventListener('error', onLoad, { once: true });
-  });
-
-  videos.forEach(vid => {
-    if (vid.readyState >= (USE_METADATA_ONLY ? 1 : 4)) { onLoad(); return; }
-    vid.addEventListener(videoEvent, onLoad, { once: true });
-    vid.addEventListener('error',    onLoad, { once: true });
-    vid.load();
+    if (img.complete && img.naturalWidth > 0) {
+      onLoad();
+    } else {
+      img.addEventListener('load',  onLoad, { once: true });
+      img.addEventListener('error', onLoad, { once: true });
+    }
   });
 }
 
@@ -219,7 +220,7 @@ function buildOpeningLetter() {
     const p = document.createElement('p');
     p.className = 'letter-line';
     p.textContent = line;
-    p.style.transitionDelay = (i * 0.12) + 's';
+    p.style.transitionDelay = (i * 0.1) + 's';
     wrap.appendChild(p);
   });
 }
@@ -269,11 +270,11 @@ function buildGiftHunt() {
     step.id = 'gift-step-' + i;
 
     const src = 'assets/videos/' + item.video;
+    const posterSrc = 'assets/images/gift-poster-' + (i + 1) + '.jpg';
+
     step.innerHTML = `
       <div class="gift-video-wrap">
-        <video data-preload playsinline controls preload="metadata"
-               poster="assets/images/gift-poster-${i+1}.jpg"
-               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <video playsinline controls preload="none" poster="${posterSrc}">
           <source src="${src}" type="video/mp4">
         </video>
         <div class="gift-video-placeholder" style="display:none">
@@ -283,6 +284,16 @@ function buildGiftHunt() {
       <p class="gift-caption">${item.caption}</p>`;
 
     wrap.appendChild(step);
+
+    const videoWrap = step.querySelector('.gift-video-wrap');
+    const video = videoWrap.querySelector('video');
+    const placeholder = videoWrap.querySelector('.gift-video-placeholder');
+
+    // Handle empty 0-byte video placeholders or load failures cleanly
+    video.addEventListener('error', () => {
+      video.style.display = 'none';
+      placeholder.style.display = 'flex';
+    });
 
     const dot = document.createElement('div');
     dot.className = 'gift-dot' + (i === 0 ? ' active' : '');
@@ -313,7 +324,7 @@ function buildReasons() {
   content.reasons.forEach((reason, i) => {
     const card = document.createElement('div');
     card.className = 'reason-card reveal-scale';
-    card.style.transitionDelay = (i * 0.04) + 's';
+    card.style.transitionDelay = (i * 0.03) + 's';
     card.setAttribute('role', 'button');
     card.setAttribute('tabindex', '0');
     card.setAttribute('aria-label', `السبب ${i + 1}`);
@@ -342,7 +353,7 @@ function buildGallery() {
   content.gallery.forEach((filename, i) => {
     const item = document.createElement('div');
     item.className = 'gallery-item reveal-scale';
-    item.style.transitionDelay = (i * 0.06) + 's';
+    item.style.transitionDelay = (i * 0.04) + 's';
 
     const src = 'assets/images/' + filename;
     item.innerHTML = `
@@ -377,14 +388,14 @@ function buildOurMoments() {
   content.ourMoments.forEach((item, i) => {
     const el = document.createElement('div');
     el.className = 'moment-item reveal';
-    el.style.transitionDelay = (i * 0.15) + 's';
+    el.style.transitionDelay = (i * 0.12) + 's';
 
     const src = 'assets/videos/' + item.video;
+    const posterSrc = 'assets/images/us-poster-' + (i + 1) + '.jpg';
+
     el.innerHTML = `
       <div class="moment-video-wrap">
-        <video data-preload playsinline preload="metadata"
-               poster="assets/images/us-poster-${i+1}.jpg"
-               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <video playsinline preload="none" poster="${posterSrc}">
           <source src="${src}" type="video/mp4">
         </video>
         <div class="gift-video-placeholder" style="display:none">
@@ -403,22 +414,32 @@ function buildOurMoments() {
 
     list.appendChild(el);
 
-    setTimeout(() => {
-      const wrap   = el.querySelector('.moment-video-wrap');
-      const video  = wrap.querySelector('video');
-      const playBtn = wrap.querySelector('.play-btn');
+    const wrap = el.querySelector('.moment-video-wrap');
+    const video = wrap.querySelector('video');
+    const playBtn = wrap.querySelector('.play-btn');
+    const placeholder = wrap.querySelector('.gift-video-placeholder');
 
-      if (!video) return;
+    video.addEventListener('error', () => {
+      video.style.display = 'none';
+      playBtn.style.display = 'none';
+      placeholder.style.display = 'flex';
+    });
 
-      playBtn.addEventListener('click', () => {
-        if (video.paused) {
-          video.play().catch(() => {});
+    playBtn.addEventListener('click', () => {
+      if (video.paused) {
+        video.play().then(() => {
           playBtn.classList.add('hide');
-        }
-      });
-      video.addEventListener('pause', () => playBtn.classList.remove('hide'));
-      video.addEventListener('ended', () => playBtn.classList.remove('hide'));
-    }, 100);
+        }).catch(() => {
+          // If video file is 0-byte or unplayable, fallback gracefully
+          video.style.display = 'none';
+          playBtn.style.display = 'none';
+          placeholder.style.display = 'flex';
+        });
+      }
+    });
+
+    video.addEventListener('pause', () => playBtn.classList.remove('hide'));
+    video.addEventListener('ended', () => playBtn.classList.remove('hide'));
   });
 }
 
@@ -478,7 +499,7 @@ function initAmbientCanvas() {
       this.alpha = 0.2 + Math.random() * 0.4;
       this.rot   = Math.random() * Math.PI * 2;
       this.rotSpeed = (Math.random() - 0.5) * 0.02;
-      this.type  = Math.floor(Math.random() * 4); // 0: Petal, 1: Star, 2: Heart, 3: Bokeh Orb
+      this.type  = Math.floor(Math.random() * 4);
       this.color = ['#e8b4ad', '#c8958c', '#d4a96a', '#ecc9c5'][Math.floor(Math.random() * 4)];
     }
     update() {
@@ -493,17 +514,14 @@ function initAmbientCanvas() {
       ctx.translate(this.x, this.y);
       ctx.rotate(this.rot);
       ctx.fillStyle = this.color;
-      ctx.strokeStyle = this.color;
 
       if (this.type === 0) {
-        // Organic Petal Shape
         ctx.beginPath();
         ctx.moveTo(0, -this.size / 2);
         ctx.bezierCurveTo(this.size / 2, -this.size / 4, this.size / 2, this.size / 4, 0, this.size / 2);
         ctx.bezierCurveTo(-this.size / 2, this.size / 4, -this.size / 2, -this.size / 4, 0, -this.size / 2);
         ctx.fill();
       } else if (this.type === 1) {
-        // 4-Point Star
         ctx.beginPath();
         for (let i = 0; i < 4; i++) {
           ctx.lineTo(Math.cos((i * Math.PI) / 2) * this.size, Math.sin((i * Math.PI) / 2) * this.size);
@@ -512,7 +530,6 @@ function initAmbientCanvas() {
         ctx.closePath();
         ctx.fill();
       } else if (this.type === 2) {
-        // Vector Heart
         const s = this.size * 0.5;
         ctx.beginPath();
         ctx.moveTo(0, s * 0.6);
@@ -520,7 +537,6 @@ function initAmbientCanvas() {
         ctx.bezierCurveTo(s * 0.8, -s, s, -s * 0.4, 0, s * 0.6);
         ctx.fill();
       } else {
-        // Glowing Bokeh Orb
         const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, this.size);
         grad.addColorStop(0, this.color);
         grad.addColorStop(1, 'transparent');
@@ -628,7 +644,7 @@ function addRipple(el) {
         gravity: 0.26,
         size:    12 + Math.random() * 16,
         color:   COLORS[Math.floor(Math.random() * COLORS.length)],
-        type:    Math.floor(Math.random() * 4), // 0: Heart, 1: Petal, 2: Sparkle, 3: Ribbon
+        type:    Math.floor(Math.random() * 4),
         alpha:   1,
         rot:     Math.random() * Math.PI * 2,
         rotV:    (Math.random() - 0.5) * 0.22,
@@ -658,7 +674,6 @@ function addRipple(el) {
           ctx.fillStyle = p.color;
 
           if (p.type === 0) {
-            // Heart Vector Path
             const s = p.size * 0.5;
             ctx.beginPath();
             ctx.moveTo(0, s * 0.6);
@@ -666,14 +681,12 @@ function addRipple(el) {
             ctx.bezierCurveTo(s * 0.8, -s, s, -s * 0.4, 0, s * 0.6);
             ctx.fill();
           } else if (p.type === 1) {
-            // Petal Teardrop
             ctx.beginPath();
             ctx.moveTo(0, -p.size / 2);
             ctx.bezierCurveTo(p.size / 2, -p.size / 4, p.size / 2, p.size / 4, 0, p.size / 2);
             ctx.bezierCurveTo(-p.size / 2, p.size / 4, -p.size / 2, -p.size / 4, 0, -p.size / 2);
             ctx.fill();
           } else if (p.type === 2) {
-            // Sparkle Star
             ctx.beginPath();
             for (let i = 0; i < 4; i++) {
               ctx.lineTo(Math.cos((i * Math.PI) / 2) * p.size, Math.sin((i * Math.PI) / 2) * p.size);
@@ -682,7 +695,6 @@ function addRipple(el) {
             ctx.closePath();
             ctx.fill();
           } else {
-            // Metallic Ribbon
             ctx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2);
           }
 
